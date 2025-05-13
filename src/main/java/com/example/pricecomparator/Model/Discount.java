@@ -1,20 +1,18 @@
-package com.example.pricecomparator;
+package com.example.pricecomparator.Model;
 
 import java.time.LocalDate;
 
-public class Product {
+public class Discount {
     private String product_id;
     private String product_name;
-    private String product_category;
     private String brand;
     private double package_quantity;
     private String package_unit;
-    private double price;
-    private String currency;
+    private String product_category;
+    private LocalDate from_date;
+    private LocalDate to_date;
+    private double percentage_of_discount;
     private String store;
-    private LocalDate date;
-
-    public Product() {}
 
     public String getProduct_id() {
         return product_id;
@@ -30,14 +28,6 @@ public class Product {
 
     public void setProduct_name(String product_name) {
         this.product_name = product_name;
-    }
-
-    public String getProduct_category() {
-        return product_category;
-    }
-
-    public void setProduct_category(String product_category) {
-        this.product_category = product_category;
     }
 
     public String getBrand() {
@@ -64,20 +54,36 @@ public class Product {
         this.package_unit = package_unit;
     }
 
-    public double getPrice() {
-        return price;
+    public String getProduct_category() {
+        return product_category;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setProduct_category(String product_category) {
+        this.product_category = product_category;
     }
 
-    public String getCurrency() {
-        return currency;
+    public LocalDate getFrom_date() {
+        return from_date;
     }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
+    public void setFrom_date(LocalDate from_date) {
+        this.from_date = from_date;
+    }
+
+    public LocalDate getTo_date() {
+        return to_date;
+    }
+
+    public void setTo_date(LocalDate to_date) {
+        this.to_date = to_date;
+    }
+
+    public double getPercentage_of_discount() {
+        return percentage_of_discount;
+    }
+
+    public void setPercentage_of_discount(double percentage_of_discount) {
+        this.percentage_of_discount = percentage_of_discount;
     }
 
     public String getStore() {
@@ -88,11 +94,4 @@ public class Product {
         this.store = store;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
 }

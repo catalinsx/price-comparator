@@ -1,6 +1,8 @@
-package com.example.pricecomparator;
+package com.example.pricecomparator.Controllers;
 
 
+import com.example.pricecomparator.Model.Product;
+import com.example.pricecomparator.Utils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

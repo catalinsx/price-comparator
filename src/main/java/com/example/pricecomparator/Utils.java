@@ -1,5 +1,7 @@
 package com.example.pricecomparator;
 
+import com.example.pricecomparator.Model.Discount;
+import com.example.pricecomparator.Model.Product;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -64,5 +66,50 @@ public class  Utils {
             System.out.println("Parsing error" + exception);
         }
         return products;
+    }
+
+    public List<Discount> readDiscounts(String filename){
+        String base = filename.substring(0, filename.lastIndexOf('.'));
+        String[] partsOfBase = base.split("_");
+        String store = partsOfBase[0];
+
+        InputStream inputStream = getClass().getResourceAsStream("/csv/" + filename);
+        if(inputStream == null){
+            throw new IllegalArgumentException("File not found" + filename);
+        }
+
+        List<Discount> discounts = new ArrayList<>();
+
+        try{
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            CSVParser parser = new CSVParserBuilder()
+                    .withSeparator(';')
+                    .build();
+            CSVReader csvReader = new CSVReaderBuilder(inputStreamReader)
+                    .withSkipLines(1)
+                    .withCSVParser(parser)
+                    .build();
+
+            String[] columns;
+            while((columns = csvReader.readNext()) != null){
+                Discount discount = new Discount();
+
+                discount.setProduct_id(columns[0].trim());
+                discount.setProduct_name(columns[1].trim());
+                discount.setBrand(columns[2].trim());
+                discount.setPackage_quantity(Double.parseDouble(columns[3].trim()));
+                discount.setPackage_unit(columns[4].trim());
+                discount.setProduct_category(columns[5].trim());
+                discount.setFrom_date(LocalDate.parse(columns[6].trim()));
+                discount.setTo_date(LocalDate.parse(columns[7].trim()));
+                discount.setPercentage_of_discount(Double.parseDouble(columns[8].trim()));
+                discount.setStore(store);
+
+                discounts.add(discount);
+            }
+        } catch(Exception exception) {
+            System.out.println("Parser error" + exception);
+        }
+        return discounts;
     }
 }
