@@ -5,15 +5,17 @@ import com.example.pricecomparator.Utils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 @Service
-public class BestDiscount {
+public class DiscountService {
     private final Utils utils;
 
-    public BestDiscount(Utils utils){
+    public DiscountService(Utils utils){
         this.utils = utils;
     }
 
@@ -58,5 +60,18 @@ public class BestDiscount {
             }
         }
         return bestDiscounts;
+    }
+
+    public List<Discount> getNewDiscounts(){
+        List<Discount> allDiscounts = getAllDiscounts();
+        List<Discount> newDiscounts = new ArrayList<>();
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+
+        for(Discount discount : allDiscounts){
+            if(discount.getFrom_date().equals(LocalDate.now()) || discount.getFrom_date().equals(yesterday))
+                newDiscounts.add(discount);
+        }
+
+        return newDiscounts;
     }
 }
