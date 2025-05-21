@@ -54,7 +54,7 @@ public class BasketService {
             double total = 0;
             boolean canBuyAllProducts = true;
 
-            // 1. check each store to find the best one for buying everything
+            // check each store to find the best one for buying everything
            for(String productId : productIds){
                Product foundProduct = null;
                for(Product product : allProducts){
@@ -80,58 +80,41 @@ public class BasketService {
            }
         }
 
-        // 2. splitBasketOption, buying each product at its cheapest store
-        Map<String, List<Product>> splitbasket = new HashMap<>();
+        Map<String, List<Map<String, Object>>> splitBasket = new LinkedHashMap<>();
         double splitTotal = 0;
-        List<String> foundProductIds = new ArrayList<>();
+        int foundCounter = 0;
 
-        for(String productId : productIds){
-            Product cheapestProduct = null;
+        for(String id : productIds){
+            Product cheapest = null;
 
             for(Product product : allProducts){
-                if(product.getProduct_id().equals(productId)){
-                    if(cheapestProduct == null || product.getPrice() < cheapestProduct.getPrice()){
-                        cheapestProduct = product;
+                if(product.getProduct_id().equals(id)){
+                    if(cheapest == null || product.getPrice() < cheapest.getPrice()){
+                        cheapest = product;
                     }
                 }
             }
 
-            if(cheapestProduct != null){
-                String store = cheapestProduct.getStore();
+            if (cheapest != null) {
+                String store = cheapest.getStore();
 
-                if(!splitbasket.containsKey(store)){
-                    splitbasket.put(store, new ArrayList<>());
+                if(!splitBasket.containsKey(store)){
+                    splitBasket.put(store, new ArrayList<>());
                 }
 
-                splitbasket.get(store).add(cheapestProduct);
-                splitTotal = splitTotal + cheapestProduct.getPrice();
-                foundProductIds.add(productId);
+                Map<String, Object> productInfo = new LinkedHashMap<>();
+                productInfo.put("productId", cheapest.getProduct_id());
+                productInfo.put("productName", cheapest.getProduct_name());
+                productInfo.put("price", cheapest.getPrice());
+
+                splitBasket.get(store).add(productInfo);
+
+                splitTotal = splitTotal + cheapest.getPrice();
+                foundCounter++;
             }
         }
 
-        // 3. formatting the split for the response
-        Map<String, List<Map<String, Object>>> splitBaskedFormatted = new HashMap<>();
-
-        // for each store in our split basket
-        for(Map.Entry<String, List<Product>> entry : splitbasket.entrySet()){
-            String store = entry.getKey(); // current store
-            List<Product> products = entry.getValue(); // products to buy at this store
-            List<Map<String, Object>> storeProducts = new ArrayList<>(); // formatted product list
-
-            for(Product product : products){
-                Map<String, Object> productInfo = new HashMap<>();
-                productInfo.put("productId", product.getProduct_id());
-                productInfo.put("productName", product.getProduct_name());
-                productInfo.put("price", product.getPrice());
-
-                storeProducts.add(productInfo);
-            }
-
-            // add the formatted products for this store
-            splitBaskedFormatted.put(store, storeProducts);
-        }
-
-        // 4. building the recommendation
+        // building the recommendation
         if(bestStore != null){
             result.put("bestStore", bestStore);
             result.put("bestStoreTotal", formatPrice(bestStoreTotal) + " RON");
@@ -141,23 +124,24 @@ public class BasketService {
                 double savings = Double.parseDouble(formatPrice(bestStoreTotal - splitTotal));
                 result.put("recommendation", "You save " + savings + " RON if you split the basket");
                 result.put("splitTotal", formatPrice(splitTotal) + " RON");
-                result.put("splitBasket", splitBaskedFormatted);
+                result.put("splitBasket", splitBasket);
                 result.put("bestOption", "split");
             } else {
                 result.put("recommendation", "It is more convenient to buy everything from " + bestStore);
                 result.put("bestOption", "single");
             }
         } else {
-            // no single store has all products
-            if (foundProductIds.size() == productIds.size()) {
-                result.put("recommendation", "You have to split the products between different stores");
+            boolean allFound = foundCounter == productIds.size();
+            if (allFound) {
+                result.put("recommendation",
+                        "You have to split the products between different stores");
             } else {
-                // some products don't exist in any store
-                result.put("recommendation", "Some products are not available in any store");
+                result.put("recommendation",
+                        "Some products are not available in any store");
             }
 
             result.put("splitTotal", formatPrice(splitTotal) + " RON");
-            result.put("splitBasket", splitBaskedFormatted);
+            result.put("splitBasket", splitBasket);
             result.put("bestOption", "split");
         }
 
