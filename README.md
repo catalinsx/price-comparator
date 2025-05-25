@@ -24,6 +24,7 @@ You can test all endpoints using Swagger UI at: http://localhost:8080/swagger-ui
 - `GET /api/product/{productId}/substitutes` -> Get substitute products for a specific product
 - `POST /api/product/basket/optimize` ->  Optimize basket split for cost (JSON body: list of product IDs)
 - `GET /api/product/{productId}/price-history?store={store}` -> Get historical price data for a product (optional `store` filter)
+- `GET /api/product/summary -> Get summary of available products
 
 ---
 
